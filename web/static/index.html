@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fair Housing & Lending Prompt Validator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="brand-icon">🏛️</div>
+        <div>
+          <h1 class="brand-title">Fair Housing & Lending Prompt Validator</h1>
+          <p class="brand-subtitle">Automated legal compliance guardrail enforcing FHA, ECOA, CRA, HMDA & HUD regulations</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="legalRefBtn" class="btn btn-secondary">
+          <span class="btn-icon">📜</span> Legal Framework
+        </button>
+        <button id="apiKeyBtn" class="btn btn-secondary">
+          <span class="btn-icon">🔑</span> <span id="apiKeyStatusText">Gemini API Key</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace-grid">
+      <!-- Left Column: Input & Controls -->
+      <section class="card input-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="title-icon">✏️</span>
+            <h2>Prompt Input & Audit Parameters</h2>
+          </div>
+          <span class="badge badge-neutral" id="charCounter">0 characters</span>
+        </div>
+
+        <div class="card-body">
+          <!-- Preset Prompts -->
+          <div class="form-group">
+            <label for="presetSelect" class="form-label">
+              Load Preset Benchmark Case:
+              <span class="label-hint">Test known legal violations & compliant baselines</span>
+            </label>
+            <div class="select-wrapper">
+              <select id="presetSelect" class="form-select">
+                <option value="">-- Choose a benchmark scenario --</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Context & Mode -->
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="contextSelect" class="form-label">Application Context</label>
+              <select id="contextSelect" class="form-select">
+                <option value="rental_listing">Rental Listing / Lease Notice</option>
+                <option value="mortgage_underwriting">Mortgage & Credit Underwriting</option>
+                <option value="ad_targeting">Digital Ad Targeting & Marketing</option>
+                <option value="general" selected>General Housing Prompt</option>
+              </select>
+            </div>
+            <div class="form-group flex-1">
+              <label class="form-label">Analysis Engines</label>
+              <div class="toggle-container">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="semanticToggle" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label" id="semanticToggleLabel">Gemini Semantic AI (Active)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt Text Area -->
+          <div class="form-group">
+            <div class="textarea-header">
+              <label for="promptInput" class="form-label">Prompt to Validate</label>
+              <button id="clearPromptBtn" class="text-btn">Clear</button>
+            </div>
+            <textarea
+              id="promptInput"
+              class="form-textarea"
+              rows="7"
+              placeholder="Enter your prompt here... e.g., 'Draft a rental listing for our 2-bedroom condo: Looking for quiet tenants, adults only, no kids, near Christian church.'"
+            ></textarea>
+          </div>
+
+          <!-- Quick Test Pills -->
+          <div class="quick-pills-container">
+            <span class="pills-label">Quick Tests:</span>
+            <button class="pill-btn" data-preset="CASE_01_FAMILIAL_STATUS">Adults Only (Kids Ban)</button>
+            <button class="pill-btn" data-preset="CASE_05_SERVICE_ANIMAL">No Service Dogs</button>
+            <button class="pill-btn" data-preset="CASE_09_REDLINING_GEOGRAPHIC">Zip Redlining</button>
+            <button class="pill-btn" data-preset="CASE_07_SOURCE_OF_INCOME">No Section 8</button>
+            <button class="pill-btn" data-preset="CASE_18_COMPLIANT_RENTAL">Compliant Unit</button>
+          </div>
+
+          <!-- Submit Button -->
+          <button id="validateBtn" class="btn btn-primary btn-block">
+            <span class="btn-icon">⚡</span> Run Compliance Audit
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Column: Audit Results -->
+      <section class="card results-card" id="resultsCard">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="title-icon">🛡️</span>
+            <h2>Compliance Audit Report</h2>
+          </div>
+          <div id="statusBadgeContainer">
+            <span class="badge badge-neutral">Awaiting Input</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- Empty State -->
+          <div id="emptyState" class="empty-state">
+            <div class="empty-icon">⚖️</div>
+            <h3>No Audit Performed Yet</h3>
+            <p>Enter a prompt on the left or select a preset benchmark case to run legal compliance validation across all U.S. housing and credit discrimination statutes.</p>
+          </div>
+
+          <!-- Loading State -->
+          <div id="loadingState" class="loading-state hidden">
+            <div class="spinner"></div>
+            <h3>Auditing Prompt Against Fair Housing Statutes...</h3>
+            <p>Evaluating FHA § 3604, ECOA Reg B, CRA geographic redlining, and HUD disparate impact rules.</p>
+          </div>
+
+          <!-- Result Content -->
+          <div id="resultContent" class="result-content hidden">
+            <!-- Score Meter -->
+            <div class="metric-card" id="metricCard">
+              <div class="metric-header">
+                <div>
+                  <span class="metric-label">Violation Risk Score</span>
+                  <div class="metric-score" id="riskScoreValue">0.00 <span class="score-scale">/ 1.00</span></div>
+                </div>
+                <div class="metric-badge-container">
+                  <span id="severityBadge" class="badge">CLEAN</span>
+                </div>
+              </div>
+              <div class="progress-bar-bg">
+                <div id="riskProgressBar" class="progress-bar-fill" style="width: 0%"></div>
+              </div>
+              <p id="resultSummaryText" class="metric-summary"></p>
+            </div>
+
+            <!-- Violations Section -->
+            <div id="violationsSection" class="violations-section hidden">
+              <h3 class="section-title">
+                <span>⚠️ Flagged Legal Violations</span>
+                <span id="violationCountBadge" class="badge badge-danger">0</span>
+              </h3>
+              <div id="violationsList" class="violations-list"></div>
+            </div>
+
+            <!-- Suggested Rewrite Section -->
+            <div id="rewriteSection" class="rewrite-section hidden">
+              <div class="rewrite-header">
+                <h3 class="section-title">💡 Recommended Compliant Rewrite</h3>
+                <div class="rewrite-actions">
+                  <button id="copyRewriteBtn" class="btn btn-sm btn-secondary">
+                    <span>📋</span> Copy
+                  </button>
+                  <button id="applyRewriteBtn" class="btn btn-sm btn-accent">
+                    <span>↩️</span> Use in Input
+                  </button>
+                </div>
+              </div>
+              <div class="rewrite-box">
+                <p id="rewriteText"></p>
+              </div>
+            </div>
+
+            <!-- Audit Metadata Footer -->
+            <div class="audit-meta-footer" id="auditMetaFooter">
+              <div class="meta-item">
+                <span class="meta-label">Execution Time:</span>
+                <span id="execTimeText" class="meta-val">0 ms</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Checks Run:</span>
+                <span id="checksRunText" class="meta-val">Rule + Proxy Scanner</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Semantic AI:</span>
+                <span id="semanticAiStatus" class="meta-val">Offline</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: API Key Config -->
+    <div id="apiKeyModal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Configure Gemini API Key</h3>
+          <button id="closeApiKeyModal" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">
+            Provide your Google Gemini API key to activate Tier 3 deep semantic evaluation, catching subtle disparate impact, coded racial steering, and algorithmic bias.
+          </p>
+          <div class="form-group">
+            <label for="apiKeyInput" class="form-label">Gemini API Key</label>
+            <input
+              type="password"
+              id="apiKeyInput"
+              class="form-input"
+              placeholder="AIzaSy..."
+            />
+            <span class="label-hint">Key is saved in memory for this session and never logged.</span>
+          </div>
+          <div id="keyFeedback" class="feedback-msg hidden"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelApiKeyBtn" class="btn btn-secondary">Cancel</button>
+          <button id="saveApiKeyBtn" class="btn btn-primary">Save & Connect</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Legal Reference Explorer -->
+    <div id="legalModal" class="modal-overlay hidden">
+      <div class="modal-card modal-wide">
+        <div class="modal-header">
+          <h3>Statutory & Case Law Reference Guide</h3>
+          <button id="closeLegalModal" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body legal-modal-body">
+          <div class="legal-grid" id="legalStatutesContainer">
+            <!-- Dynamically populated from /api/statutes -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

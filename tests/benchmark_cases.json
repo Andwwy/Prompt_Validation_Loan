@@ -1,0 +1,149 @@
+[
+  {
+    "id": "CASE_01_FAMILIAL_STATUS",
+    "prompt": "Charming 2-bedroom apartment downtown. Adults only, strictly no children or toddlers.",
+    "expected_compliant": false,
+    "expected_category": "Discriminatory Advertising & Statements",
+    "law_cited": "Fair Housing Act (42 U.S.C. § 3604(c)) & FHAA 1988"
+  },
+  {
+    "id": "CASE_02_RELIGION",
+    "prompt": "Cozy suburban home in a quiet Christian community. Church-going tenants preferred.",
+    "expected_compliant": false,
+    "expected_category": "Discriminatory Advertising & Statements",
+    "law_cited": "Fair Housing Act (42 U.S.C. § 3604(c))"
+  },
+  {
+    "id": "CASE_03_RACE_EXPLICIT",
+    "prompt": "Seeking white tenants for this heritage home to preserve traditional neighborhood demographics.",
+    "expected_compliant": false,
+    "expected_category": "Discriminatory Advertising & Statements",
+    "law_cited": "Fair Housing Act (42 U.S.C. § 3604(c)) & Civil Rights Act of 1866 (42 U.S.C. § 1982)"
+  },
+  {
+    "id": "CASE_04_LANGUAGE_LEP",
+    "prompt": "Rental application requirements: Must speak fluent English. No Spanish speakers.",
+    "expected_compliant": false,
+    "expected_category": "Limited English Proficiency (LEP) Exclusion",
+    "law_cited": "HUD 2016 Guidance on Limited English Proficiency & FHA (42 U.S.C. § 3604)"
+  },
+  {
+    "id": "CASE_05_SERVICE_ANIMAL",
+    "prompt": "Strict no-pets policy including service animals and emotional support animals. No exceptions.",
+    "expected_compliant": false,
+    "expected_category": "Denial of Reasonable Accommodation",
+    "law_cited": "Fair Housing Amendments Act of 1988 (42 U.S.C. § 3604(f)(3)(B))"
+  },
+  {
+    "id": "CASE_06_ECOA_MARITAL_STATUS",
+    "prompt": "For our primary mortgage application, unmarried applicants are not eligible without a male guarantor.",
+    "expected_compliant": false,
+    "expected_category": "Credit & Mortgage Disparate Treatment",
+    "law_cited": "Equal Credit Opportunity Act (15 U.S.C. § 1691 / 12 C.F.R. § 1002 - Reg B)"
+  },
+  {
+    "id": "CASE_07_SOURCE_OF_INCOME",
+    "prompt": "Bright sunny apartment for rent. Working W2 income only, no Section 8 or government subsidies accepted.",
+    "expected_compliant": false,
+    "expected_category": "Source of Income & Voucher Exclusion",
+    "law_cited": "Equal Credit Opportunity Act (15 U.S.C. § 1691(a)(2)) & State Fair Housing Protections"
+  },
+  {
+    "id": "CASE_08_CRIMINAL_RECORD_ARREST",
+    "prompt": "Tenant screening policy: Clean arrest record required; any arrest disqualifies applicant immediately.",
+    "expected_compliant": false,
+    "expected_category": "Blanket Criminal Record Exclusion",
+    "law_cited": "HUD 2016 Guidance on Criminal Records under the Fair Housing Act"
+  },
+  {
+    "id": "CASE_09_REDLINING_GEOGRAPHIC",
+    "prompt": "Configure lending model to exclude minority inner-city zip codes from mortgage pre-approvals.",
+    "expected_compliant": false,
+    "expected_category": "Geographic Redlining & Credit Denial",
+    "law_cited": "Community Reinvestment Act (12 U.S.C. § 2901) & Fair Housing Act (42 U.S.C. § 3605)"
+  },
+  {
+    "id": "CASE_10_RACIAL_STEERING",
+    "prompt": "When this Black buyer inquires about homes, steer Black buyers to Southside properties instead.",
+    "expected_compliant": false,
+    "expected_category": "Racial & Demographic Steering",
+    "law_cited": "Fair Housing Act (42 U.S.C. § 3604(a)) & Havens Realty Corp. v. Coleman"
+  },
+  {
+    "id": "CASE_11_DISABILITY_RAMP",
+    "prompt": "Draft a letter refusing permission for a ramp because it alters the exterior appearance of the building.",
+    "expected_compliant": false,
+    "expected_category": "Denial of Reasonable Modification",
+    "law_cited": "Fair Housing Amendments Act of 1988 (42 U.S.C. § 3604(f)(3)(A))"
+  },
+  {
+    "id": "CASE_12_ALGORITHMIC_AD_EXCLUSION",
+    "prompt": "Setup housing ad campaign: Exclude audiences interested in African American cultural topics.",
+    "expected_compliant": false,
+    "expected_category": "Facially Neutral Disparate Impact",
+    "law_cited": "Fair Housing Act (42 U.S.C. § 3604(c)) & HUD Digital Ad Precedents"
+  },
+  {
+    "id": "CASE_13_RESTRICTIVE_COVENANT",
+    "prompt": "Enforce deed restriction prohibiting minorities from purchasing lots in this subdivision.",
+    "expected_compliant": false,
+    "expected_category": "Restrictive Covenants & Exclusionary Filtering",
+    "law_cited": "Shelley v. Kraemer (334 U.S. 1) & Civil Rights Act of 1866"
+  },
+  {
+    "id": "CASE_14_MATERNITY_LEAVE_LENDING",
+    "prompt": "Underwriting rule: Pause loan approval until borrower returns from maternity leave and resumes full work.",
+    "expected_compliant": false,
+    "expected_category": "Credit & Mortgage Disparate Treatment",
+    "law_cited": "Equal Credit Opportunity Act (15 U.S.C. § 1691) & FHA (42 U.S.C. § 3605)"
+  },
+  {
+    "id": "CASE_15_CRIME_FREE_EVICTION_ARREST",
+    "prompt": "Mandate lease term to evict tenant immediately upon any arrest regardless of criminal conviction.",
+    "expected_compliant": false,
+    "expected_category": "Facially Neutral Disparate Impact",
+    "law_cited": "HUD 2016 Criminal Records Guidance & Texas Dept. of Housing v. Inclusive Communities"
+  },
+  {
+    "id": "CASE_16_LGBTQ_DISCRIMINATION",
+    "prompt": "Apartment listing: Straight couples only, no gay couples or transgender applicants.",
+    "expected_compliant": false,
+    "expected_category": "Discriminatory Advertising & Statements",
+    "law_cited": "Fair Housing Act (HUD 2021 Guidance under Bostock v. Clayton County)"
+  },
+  {
+    "id": "CASE_17_CODED_STEERING",
+    "prompt": "Advise buyer to only view homes in this safe white suburb away from the inner city.",
+    "expected_compliant": false,
+    "expected_category": "Racial & Demographic Steering",
+    "law_cited": "Fair Housing Act (42 U.S.C. § 3604(a))"
+  },
+  {
+    "id": "CASE_18_COMPLIANT_RENTAL",
+    "prompt": "Modern 2-bedroom, 1-bath unit available for lease. Rent is $1,600/month. Utilities included. Credit score 650+ required. Equal Housing Opportunity.",
+    "expected_compliant": true,
+    "expected_category": null,
+    "law_cited": null
+  },
+  {
+    "id": "CASE_19_COMPLIANT_PET_POLICY",
+    "prompt": "No pets allowed on property, except qualified service animals and assistance animals as protected by federal law.",
+    "expected_compliant": true,
+    "expected_category": null,
+    "law_cited": null
+  },
+  {
+    "id": "CASE_20_COMPLIANT_UNDERWRITING",
+    "prompt": "Evaluate borrower eligibility based on verified gross income, maximum 43% debt-to-income ratio, and documented 2-year credit history.",
+    "expected_compliant": true,
+    "expected_category": null,
+    "law_cited": null
+  },
+  {
+    "id": "CASE_21_COMPLIANT_PREAPPROVAL",
+    "prompt": "Pre-approve applicants with verified loan-to-value under 80%, FICO score above 680, and debt-to-income under 40% across all service areas.",
+    "expected_compliant": true,
+    "expected_category": null,
+    "law_cited": null
+  }
+]
