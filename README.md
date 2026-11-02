@@ -29,6 +29,7 @@ The system audits against all statutory provisions, landmark Supreme Court prece
 4. **Affirmative Prompt Rewriter (Tier 4)**: Generates safe, legally compliant rewrites that achieve the user's business objectives without unlawful criteria.
 5. **Interactive Web UI Dashboard**: Modern dark-mode interface with live risk gauges, interactive violation cards, one-click copy rewrites, and built-in legal reference explorer.
 6. **Rich CLI Tool**: Terminal audit utility with formatted tables, violation severities, and automated benchmark execution.
+7. **Agent Probing Kit (`probekit/`)**: Counterfactual A/B probes that test what a loan-officer AI agent does with a prompt. Arms differ in one borrower cue or in the loan officer's framing; bias is the gap in false flags between arms (MortarBench §7.3). It can score agent drafts with this validator.
 
 ---
 
@@ -52,6 +53,21 @@ $env:GEMINI_API_KEY="your-gemini-api-key"
 export GEMINI_API_KEY="your-gemini-api-key"
 ```
 *(You can also configure your API key dynamically through the Web UI modal or via `--api-key` in the CLI.)*
+
+---
+
+## 🔬 Agent Probing Kit
+
+The validator checks a prompt; `probekit/` checks the agent's answer. Each scenario is one JSON file with synthetic borrowers, a fixed correct output, and arms that differ in one factor. Pick any agent (`--agent`) and any model (`mock`, `gemini:`, `openai:`, `anthropic:`).
+
+```bash
+python -m probekit list                                    # 18 scenarios
+python -m probekit show remittance --arm B_guadalajara     # the exact messages one arm sends
+python -m probekit run remittance --model mock --n 2       # no API call
+python -m probekit score remittance --model mock           # gap per arm, Fisher p, Holm correction
+```
+
+Paid runs log to a spend ledger with a budget cap. See [`probekit/README.md`](probekit/README.md) for agents, models, adding scenarios, and the leak check.
 
 ---
 
