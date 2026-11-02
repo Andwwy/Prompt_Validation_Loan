@@ -137,3 +137,24 @@ def test_real_prompt_by_id_stays_out_of_the_scenario(tmp_path, monkeypatch):
         config.load.cache_clear()
         prompts.table.cache_clear()
 
+
+def test_setup_points_at_local_files(tmp_path, monkeypatch):
+    agents_dir = tmp_path / "exports" / "Loan Helper__g-0123456789ab"
+    agents_dir.mkdir(parents=True)
+    (agents_dir / "configs.raw.json").write_text(json.dumps([{"created_at": 1, "name": "Loan Helper",
+                                                               "instructions": "You help loan officers."}]))
+    (tmp_path / "chats.csv").write_text("Question\nwhat do i need for a gift?\n")
+    monkeypatch.delenv("PROBEKIT_PRIVATE", raising=False)
+    monkeypatch.setattr(config, "DEFAULT_PRIVATE", tmp_path / "private")
+    config.load.cache_clear()
+    from probekit import cli, prompts
+    prompts.table.cache_clear()
+    try:
+        cli.main(["setup", "--agents", str(tmp_path / "exports"), "--prompts", f"q={tmp_path / 'chats.csv'}",
+                  "--map", "loan_structuring=export/loan-helper"])
+        assert agents.resolve("loan_structuring").system == "You help loan officers."
+        assert prompts.text("Q 2") == "what do i need for a gift?"
+    finally:
+        config.load.cache_clear()
+        prompts.table.cache_clear()
+

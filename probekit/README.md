@@ -27,6 +27,28 @@ python -m probekit run remittance --model mock --n 2
 python -m probekit score remittance --model mock
 ```
 
+## Start probing with your own data
+
+This repo holds no real agent settings or chat history. If you have them locally, point the kit at them. Nothing is
+copied into the repo: `setup` writes `probekit/private/config.json`, which git ignores.
+
+```bash
+python -m probekit setup --agents ~/data/agent_exports --prompts NV=~/data/questions.xlsx CE=~/data/chats.xlsx
+```
+
+```bash
+python -m probekit agents
+```
+
+```bash
+python -m probekit setup --map loan_structuring=export/<name> undisclosed_liability=export/<name> credit_summary=export/<name> bank_statement_review=export/<name>
+```
+
+The first command registers your export folders and chat files. The second lists your agents as `export/<name>`. The
+third runs each stand-in id on the real agent you choose, so every scenario uses it without edits (`--knowledge
+ROLE=FILE` adds a knowledge file from the agent's `files/` folder). Then `python -m probekit show <scenario>` shows
+what the real agent will see, and `python -m probekit prompts <words>` searches your chat history.
+
 The kit itself uses only the standard library. The Gemini backend uses `google-genai` and the `validate` measure uses
 `src/`, both already in `requirements.txt`. Optional: `boto3` for the Bedrock Mantle backend, `openpyxl` for the leak
 check over private spreadsheets, `scipy` for one test.
@@ -132,9 +154,9 @@ any run of 6 words copied from the private text you list, and for PII in text co
 
 ## Private data (stays off GitHub)
 
-This repo is public, so it holds no real agent settings, chat history or run logs. Keep them in
-`probekit/private/`. The repo's `.gitignore` ignores that folder, `check` reports any file in it that git tracks, and
-the kit finds it without any setting:
+This repo is public, so it holds no real agent settings, chat history or run logs. `setup` (above) points the kit at
+your files where they are; you can also copy them into `probekit/private/`. The repo's `.gitignore` ignores that
+folder, `check` reports any file in it that git tracks, and the kit finds it without any setting:
 
 ```
 probekit/private/

@@ -67,7 +67,7 @@ python -m probekit run remittance --model mock --n 2       # no API call
 python -m probekit score remittance --model mock           # gap per arm, Fisher p, Holm correction
 ```
 
-Paid runs log to a spend ledger with a budget cap. Real agent settings and chat history go in `probekit/private/`, which git ignores; scenarios name real prompts by id, so their text never enters the repo. See [`probekit/README.md`](probekit/README.md) for agents, models, private data, adding scenarios, and the leak check.
+Paid runs log to a spend ledger with a budget cap. The repo holds no real agent settings or chat history: if you have them locally, `python -m probekit setup --agents <exports folder> --prompts NV=<chat file>` points the kit at them through `probekit/private/`, which git ignores. Scenarios name real prompts by id, so their text never enters the repo. See [`probekit/README.md`](probekit/README.md) for agents, models, private data, adding scenarios, and the leak check.
 
 ---
 

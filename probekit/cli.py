@@ -1,4 +1,6 @@
 """
+  python -m probekit setup --agents DIR [--prompts PREFIX=FILE ...] [--map ROLE=AGENT ...] [--knowledge ROLE=FILE ...]
+                                                            use your own agent exports and chat files (stay local)
   python -m probekit list                                   scenarios
   python -m probekit agents                                 agent settings you can pick
   python -m probekit show SCENARIO [--agent ID] [--arm ARM] [--rep K] [--full]
@@ -16,8 +18,51 @@ configured default.
 import argparse
 import json
 import sys
+from pathlib import Path
 
 from . import agents, check, config, prompts, run, scenarios, score
+
+
+def _pairs(items, what):
+    try:
+        return dict(x.split("=", 1) for x in items or [])
+    except ValueError:
+        sys.exit(f"--{what} takes NAME=VALUE pairs")
+
+
+def cmd_setup(a):
+    """Point the kit at your own files. Writes probekit/private/config.json, which git ignores; the files stay where
+    they are and nothing is copied into the repo."""
+    path = config.DEFAULT_PRIVATE / "config.json"
+    cfg = json.loads(path.read_text()) if path.exists() else {}
+    if a.agents:
+        root = Path(a.agents).expanduser().resolve()
+        if not any((p / "configs.raw.json").exists() for p in root.iterdir() if p.is_dir()):
+            sys.exit(f"{root} holds no custom-GPT export folders (a folder with configs.raw.json)")
+        cfg["agents_dir"] = str(root)
+        cfg["corpora"] = sorted({*cfg.get("corpora", []), str(root)})  # the leak check looks for copied agent text
+    files = {k.upper(): str(Path(v).expanduser().resolve()) for k, v in _pairs(a.prompts, "prompts").items()}
+    for f in files.values():
+        if not Path(f).is_file():
+            sys.exit(f"no such file: {f}")
+    cfg["prompt_files"] = {**cfg.get("prompt_files", {}), **files}
+    config.DEFAULT_PRIVATE.mkdir(exist_ok=True)
+    path.write_text(json.dumps(cfg, indent=1, ensure_ascii=False) + "\n")
+    config.load.cache_clear()
+    exports = {aid: folder.name for aid, folder in agents._exports().items()}
+    roles = cfg.setdefault("agents", {})
+    for role, agent in _pairs(a.map, "map").items():
+        if agent not in exports:
+            sys.exit(f"--map {role}={agent}: not an agent id from `python -m probekit agents`")
+        roles[role] = {"export": exports[agent]}
+    for role, f in _pairs(a.knowledge, "knowledge").items():
+        roles.setdefault(role, {})["knowledge"] = [f]
+    path.write_text(json.dumps(cfg, indent=1, ensure_ascii=False) + "\n")
+    config.load.cache_clear()
+    print(f"wrote {path} (git-ignored)\n{len(exports)} agents found; {len(roles)} stand-in ids mapped to real agents")
+    for prefix in cfg["prompt_files"]:
+        print(f"prompt file {prefix}: {len(prompts.table(prefix))} prompts")
+    print("next: python -m probekit agents | python -m probekit prompts <words> | python -m probekit show <scenario>")
 
 
 def cmd_list(a):
@@ -77,6 +122,13 @@ def cmd_score(a):
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="probekit", description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
+    u = sub.add_parser("setup")
+    u.add_argument("--agents", help="folder of custom-GPT export folders")
+    u.add_argument("--prompts", nargs="+", metavar="PREFIX=FILE", help="chat files (.xlsx/.csv), e.g. NV=questions.xlsx")
+    u.add_argument("--map", nargs="+", metavar="ROLE=AGENT", help="run a stand-in id on a real agent, "
+                   "e.g. loan_structuring=export/<name>")
+    u.add_argument("--knowledge", nargs="+", metavar="ROLE=FILE", help="knowledge file in the agent's files/ folder")
+    u.set_defaults(f=cmd_setup)
     sub.add_parser("list").set_defaults(f=cmd_list)
     sub.add_parser("agents").set_defaults(f=cmd_agents)
     s = sub.add_parser("show")
