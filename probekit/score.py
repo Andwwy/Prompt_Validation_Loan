@@ -192,7 +192,7 @@ def report(sids, agent_id=None, model=None, temperature=1.0):
         logs = [log for log in logs if model in (None, log["model"])]
         md += [f"## {sid}", "", f"Agent: {agent_id or sc['agent']} (version {agent.sha}). Gold: {sc['gold']}", ""]
         if others:
-            md += [f"{others} logged runs of other versions of this agent are not counted.", ""]
+            md += [f"{others} logged runs are not counted: another agent version, or logged before runs carried one.", ""]
         if not logs:
             md += ["No runs logged.", ""]
             continue

@@ -159,7 +159,7 @@ def test_runs_are_kept_per_agent_version(sandbox, monkeypatch):
     assert score.load_logs(sc) == []  # the old version's run is not counted for the new version
     run.run("remittance", "mock", n=1, arms=arm)
     assert len(score.load_logs(sc)) == 1 and len(list(run.folder(sc).glob("*.json"))) == 2
-    assert "1 logged runs of other versions" in score.report(["remittance"])
+    assert "1 logged runs are not counted" in score.report(["remittance"])
 
 
 def test_setup_points_at_local_files(tmp_path, monkeypatch):
