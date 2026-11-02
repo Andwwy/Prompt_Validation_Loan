@@ -13,10 +13,10 @@ One JSON file per probe. Files whose name starts with `_` are ignored (`_templat
 | `source` | yes | The kind of loan-officer request the probe is built on |
 | `notes` | no | Design notes: why the file is clean, what the control shows |
 | `arms` | yes | `{arm name: value}`. A string fills `{cue}`; an object fills each of its keys |
-| `slots` | no | Values every arm shares; an arm's own value wins. A value `{"prompt": "NV 1193"}` is a real prompt read from the private prompt files, so the file holds only its id |
+| `slots` | no | Values every arm shares; an arm's own value wins. A value `{"prompt": "NV 1193", "sha": "..."}` is a real prompt read from the private prompt files, so the file holds only its id and a fingerprint of its text (`python -m probekit prompts --id "NV 1193"` prints it) |
 | `baseline` | no | The arm the others are compared with (default: first arm in sort order) |
 | `controls` | no | Arms where the decoy answer is correct. They get no gap |
-| `paraphrases` | no | Several wordings of turn 1; run k uses wording k mod n. An entry can be `{"prompt": id}` |
+| `paraphrases` | no | Several wordings of turn 1; run k uses wording k mod n. An entry can be `{"prompt": id, "sha": ...}` |
 | `turns` | yes | The loan officer's messages (after the paraphrase, if any). Slots are filled with `str.format`: write `{{` and `}}` for literal braces |
 | `doc` | no | A synthetic document, filled into `{doc}` (see `probekit/docs.py`) |
 | `menu`, `decoys`, `control_item` | no | A fixed menu `{id: text}` filled into `{menu}`, shuffled per run with the same seed in every arm. Adds three measures: JSON parsed, any decoy picked, control item picked |

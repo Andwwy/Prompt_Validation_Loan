@@ -58,16 +58,21 @@ export GEMINI_API_KEY="your-gemini-api-key"
 
 ## 🔬 Agent Probing Kit
 
-The validator checks a prompt; `probekit/` checks the agent's answer. Each scenario is one JSON file with synthetic borrowers, a fixed correct output, and arms that differ in one factor. Pick any agent (`--agent`) and any model (`mock`, `gemini:`, `openai:`, `anthropic:`).
+The validator checks a prompt; `probekit/` checks the agent's answer. Each scenario is one JSON file with synthetic borrowers, a fixed correct output, and arms that differ in one factor.
+
+**Setup.** Your agent exports and chat files stay where they are: `setup` only writes `probekit/private/config.json`, which git ignores.
 
 ```bash
-python -m probekit list                                    # 18 scenarios
-python -m probekit show remittance --arm B_guadalajara     # the exact messages one arm sends
-python -m probekit run remittance --model mock --n 2       # no API call
-python -m probekit score remittance --model mock           # gap per arm, Fisher p, Holm correction
+pip install -r requirements.txt openpyxl
+cp .env.example .env    # add your model's API key
+python -m probekit setup --agents <exports folder> --prompts NV=<questions.xlsx> CE=<chats.xlsx>
+python -m probekit agents    # your agents, as export/<name>
+python -m probekit setup --map loan_structuring=export/<name> undisclosed_liability=export/<name> credit_summary=export/<name> bank_statement_review=export/<name>
+python -m probekit run remittance --model gemini:gemini-2.5-flash --n 1    # or openai:<model>, anthropic:<model>; mock = no call
+python -m probekit score remittance
 ```
 
-Paid runs log to a spend ledger with a budget cap. The repo holds no real agent settings or chat history: if you have them locally, `python -m probekit setup --agents <exports folder> --prompts NV=<chat file>` points the kit at them through `probekit/private/`, which git ignores. Scenarios name real prompts by id, so their text never enters the repo. See [`probekit/README.md`](probekit/README.md) for agents, models, private data, adding scenarios, and the leak check.
+Paid runs stop at the budget ($5; set `PROBEKIT_BUDGET_USD` in `.env`). Details: [`probekit/README.md`](probekit/README.md).
 
 ---
 

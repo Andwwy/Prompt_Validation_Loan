@@ -1,13 +1,15 @@
 """
 Real loan-officer prompts from the private prompt files, by id: "NV 559" is spreadsheet row 559 of the file the private
-config registers as NV. A scenario names the id; the text is read here at run time, so it never goes in a scenario
-file and stays off the repo.
+config registers as NV. A scenario names the id and a fingerprint of the text, {"prompt": "NV 559", "sha": "..."}; the
+text is read here at run time, so it never goes in a scenario file and stays off the repo. Row numbers move when a
+newer file is registered, so the fingerprint, not the row, says which text the scenario was written with.
 
 The text of a row is its prompt column: the rightmost header that names text, question or prompt (e.g. "Question",
 "Full user text"), else the last column. .xlsx needs openpyxl; .csv needs nothing.
 """
 
 import csv
+import hashlib
 import re
 from functools import lru_cache
 
@@ -62,3 +64,22 @@ def search(words, prefixes=None):
         for n, t in table(prefix).items():
             if all(w in t.lower() for w in words):
                 yield f"{prefix} {n}", t
+
+
+def fingerprint(t):
+    return hashlib.sha256(t.encode()).hexdigest()[:8]
+
+
+def resolve(ref):
+    """The text of a scenario's {"prompt": id, "sha": fingerprint}; an error names the row that holds it now."""
+    pid = ref["prompt"]
+    if "sha" not in ref:
+        raise ValueError(f'prompt {pid!r} has no "sha": copy the reference from python -m probekit prompts --id "{pid}"')
+    prefix, n = parse(pid)
+    t = table(prefix).get(n)
+    if t is not None and fingerprint(t) == ref["sha"]:
+        return t
+    now = [f"{p} {m}" for p in config.load()["prompt_files"] for m, x in table(p).items() if fingerprint(x) == ref["sha"]]
+    raise KeyError(f"prompt {pid!r}: row {n} no longer holds the text this scenario was written with (newer file?). " +
+                   (f"That text is now {' and '.join(now)}: update the scenario." if now else
+                    "No registered file holds it: register the file the scenario was written with."))

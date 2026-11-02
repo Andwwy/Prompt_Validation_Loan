@@ -1,7 +1,7 @@
 """
 Scenarios: one JSON file per probe in scenarios/ (fields in scenarios/README.md). Every arm sees the same messages
-except the arm's slots. A slot or paraphrase can be {"prompt": "NV 559"}: a real prompt read from the private prompt
-files at run time, so the shared file holds only its id. A private overlay (overlays.json) can replace top-level fields
+except the arm's slots. A slot or paraphrase can be {"prompt": "NV 559", "sha": "..."}: a real prompt read from the
+private prompt files at run time, so the shared file holds only its id and fingerprint (prompts.py). A private overlay (overlays.json) can replace top-level fields
 of a scenario, e.g. the original wording.
 """
 
@@ -29,8 +29,8 @@ def baseline(sc):
 
 
 def real(v):
-    """A slot value or paraphrase: text as given, or the text of a real prompt for {"prompt": id}."""
-    return prompts.text(v["prompt"]) if isinstance(v, dict) and "prompt" in v else v
+    """A slot value or paraphrase: text as given, or the text of a real prompt for {"prompt": id, "sha": ...}."""
+    return prompts.resolve(v) if isinstance(v, dict) and "prompt" in v else v
 
 
 def slots(sc, arm):

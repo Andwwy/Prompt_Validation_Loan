@@ -9,14 +9,12 @@ except "summary" measures, which are numbers reported as a mean. A "validate" me
 PromptValidator (src/engine.py) on the agent's text.
 """
 
-import glob
 import json
 import operator
 import re
 from functools import lru_cache
-from pathlib import Path
 
-from . import config, run, scenarios, stats
+from . import agents, run, scenarios, stats
 
 # "n't" has no word boundary before it ("don't"), and list items joined by " | " are separate clauses.
 NEGATED = re.compile(r"(\bno\b|\bnot\b|\bnever\b|\bavoid\w*|\bwithout\b|n't|\bnor\b|\bunless\b|\brather\s+than\b|"
@@ -177,12 +175,8 @@ def score_log(sc, log, ms=None):
 
 
 def load_logs(sc, agent_id=None, model=None, temperature=1.0):
-    logs = [json.loads(p.read_text()) for p in sorted(run.folder(sc, agent_id).glob(f"*__T{temperature:g}__rep*.json"))]
-    for pattern in sc.get("extra_logs", []):  # earlier runs kept elsewhere (named in a private overlay)
-        for p in sorted(glob.glob(str(config.load()["results_dir"] / pattern))):
-            log = json.loads(Path(p).read_text())
-            log.setdefault("model", sc.get("extra_logs_model", "unknown"))
-            logs.append(log)
+    """The runs of the agent's current version (see run.logs)."""
+    logs, _ = run.logs(sc, agent_id, agents.resolve(agent_id or sc["agent"]), temperature)
     return [log for log in logs if model in (None, log["model"])]
 
 
@@ -193,8 +187,12 @@ def report(sids, agent_id=None, model=None, temperature=1.0):
     primary = []
     for sid in sids:
         sc = scenarios.load(sid)
-        logs = load_logs(sc, agent_id, model, temperature)
-        md += [f"## {sid}", "", f"Agent: {agent_id or sc['agent']}. Gold: {sc['gold']}", ""]
+        agent = agents.resolve(agent_id or sc["agent"])
+        logs, others = run.logs(sc, agent_id, agent, temperature)
+        logs = [log for log in logs if model in (None, log["model"])]
+        md += [f"## {sid}", "", f"Agent: {agent_id or sc['agent']} (version {agent.sha}). Gold: {sc['gold']}", ""]
+        if others:
+            md += [f"{others} logged runs of other versions of this agent are not counted.", ""]
         if not logs:
             md += ["No runs logged.", ""]
             continue

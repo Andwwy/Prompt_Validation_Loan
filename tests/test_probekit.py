@@ -114,6 +114,7 @@ def test_validate_measure_uses_the_repo_validator():
 def test_gemini_backend_is_priced():
     assert backends.parse("gemini:gemini-2.5-flash") == ("gemini", "gemini-2.5-flash")
     assert backends.PRICES["gemini-2.5-flash"] and "gemini" in backends.BACKENDS
+    assert backends.list_price("openai", "gpt-5.5") == backends.PRICES["openai.gpt-5.5"]
 
 
 def test_real_prompt_by_id_stays_out_of_the_scenario(tmp_path, monkeypatch):
@@ -127,15 +128,38 @@ def test_real_prompt_by_id_stays_out_of_the_scenario(tmp_path, monkeypatch):
     try:
         assert prompts.text("CX 2") == "what do i need for a gift on fha?"
         assert [pid for pid, _ in prompts.search(["gift"])] == ["CX 2"]
-        sc = {"arms": {"A": "x", "B": "y"}, "slots": {"ask": {"prompt": "CX 2"}}, "turns": ["{ask} ({cue})"],
-              "paraphrases": [{"prompt": "CX 3"}]}
+        gift, call = (prompts.fingerprint(prompts.text(i)) for i in ("CX 2", "CX 3"))
+        sc = {"arms": {"A": "x", "B": "y"}, "slots": {"ask": {"prompt": "CX 2", "sha": gift}},
+              "turns": ["{ask} ({cue})"], "paraphrases": [{"prompt": "CX 3", "sha": call}]}
         msgs, _ = scenarios.messages(sc, "B", 0)
         assert msgs == ["call {x} about it", "what do i need for a gift on fha? (y)"]
         with pytest.raises(KeyError):
             prompts.text("NV 1")
+        with pytest.raises(ValueError, match="no \"sha\""):
+            prompts.resolve({"prompt": "CX 2"})
+        # a newer export with one more row on top: the ids move, and the fingerprint says where the text went
+        (tmp_path / "chats.csv").write_text("Job title,Full user text\nLO,new first row\n"
+                                            "LO,what do i need for a gift on fha?\nLO,call {x} about it\n")
+        prompts.table.cache_clear()
+        with pytest.raises(KeyError, match="now CX 3"):
+            scenarios.messages(sc, "B", 0)
     finally:
         config.load.cache_clear()
         prompts.table.cache_clear()
+
+
+def test_runs_are_kept_per_agent_version(sandbox, monkeypatch):
+    sc = scenarios.load("remittance")
+    arm = [scenarios.baseline(sc)]
+    run.run("remittance", "mock", n=1, arms=arm)
+    run.run("remittance", "mock", n=1, arms=arm)  # already logged: not run again
+    assert len(score.load_logs(sc)) == 1 and len(list(run.folder(sc).glob("*.json"))) == 1
+    old = agents.resolve
+    monkeypatch.setattr(agents, "resolve", lambda aid: agents.Agent(aid, "export", "re-exported", old(aid).system + "!"))
+    assert score.load_logs(sc) == []  # the old version's run is not counted for the new version
+    run.run("remittance", "mock", n=1, arms=arm)
+    assert len(score.load_logs(sc)) == 1 and len(list(run.folder(sc).glob("*.json"))) == 2
+    assert "1 logged runs of other versions" in score.report(["remittance"])
 
 
 def test_setup_points_at_local_files(tmp_path, monkeypatch):

@@ -19,14 +19,9 @@ from pathlib import Path
 
 from . import config
 
-try:
-    from dotenv import load_dotenv
-    load_dotenv(config.KIT.parent / ".env")
-except ImportError:
-    pass
-
 # USD per 1M tokens (input, output), rounded up from public list prices; models without a published price get a
-# deliberately high bound. Any other model needs --price IN,OUT.
+# deliberately high bound. A name is looked up as given, then with its backend in front (openai:gpt-5.5 has the price of
+# openai.gpt-5.5). Any other model needs --price IN,OUT.
 PRICES = {"gemini-2.5-flash": (0.30, 2.50), "gemini-2.5-flash-lite": (0.10, 0.40), "gemini-2.5-pro": (1.25, 10.00),
           "openai.gpt-oss-120b": (0.20, 0.80), "anthropic.claude-haiku-4-5": (1.10, 5.50),
           "openai.gpt-oss-20b": (0.10, 0.40), "qwen.qwen3-235b-a22b-2507": (0.50, 2.00),
@@ -34,6 +29,10 @@ PRICES = {"gemini-2.5-flash": (0.30, 2.50), "gemini-2.5-flash-lite": (0.10, 0.40
           "mistral.mistral-large-3-675b-instruct": (2.00, 6.00), "openai.gpt-5.6-sol": (4.40, 22.00),
           "openai.gpt-5.4": (2.75, 16.50)}
 MAX_TOKENS = {"qwen.qwen3-235b-a22b-2507": 2500, "deepseek.v3.2": 2500, "mistral.mistral-large-3-675b-instruct": 2500}
+
+
+def list_price(backend, name):
+    return PRICES.get(name) or PRICES.get(f"{backend}.{name}")
 
 
 def max_tokens(name):
@@ -63,9 +62,9 @@ def chat(model, system, messages, temperature=1.0, tag="", price=None):
     cfg = config.load()
     if cfg["spend_lock"].exists():  # created by the budget owner; only they remove it
         raise RuntimeError(f"spend locked: {cfg['spend_lock'].read_text().strip()}")
-    if not (price or PRICES.get(name)):
+    if not (price or list_price(backend, name)):
         raise ValueError(f"no price for {name!r}: pass --price IN,OUT (USD per 1M tokens)")
-    p_in, p_out = price or PRICES[name]
+    p_in, p_out = price or list_price(backend, name)
     # worst case: about 3 characters per token for the input, and the full output allowance
     tokens_in = max(8000, len(system + "".join(m["content"] for m in messages)) // 3)
     worst = (tokens_in * p_in + max_tokens(name) * p_out) / 1e6

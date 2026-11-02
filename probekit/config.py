@@ -19,6 +19,12 @@ from pathlib import Path
 
 KIT = Path(__file__).resolve().parent
 DEFAULT_PRIVATE = KIT / "private"
+
+try:  # model API keys and PROBEKIT_BUDGET_USD can go in the repo's .env (copy .env.example), as for the validator
+    from dotenv import load_dotenv
+    load_dotenv(KIT.parent / ".env")
+except ImportError:
+    pass
 PATH_KEYS = ("results_dir", "ledger", "spend_lock", "agents_dir", "excerpts_dir")
 
 

@@ -97,13 +97,18 @@ def cmd_show(a):
 
 
 def cmd_prompts(a):
-    """Prompts from the private prompt files, with a PII note, to pick one for a scenario ({"prompt": "<id>"})."""
+    """Prompts from the private prompt files, with a PII note, to pick one for a scenario. --id prints the reference
+    to paste: {"prompt": "<id>", "sha": "<fingerprint>"}."""
     if not config.load()["prompt_files"]:
-        sys.exit("No prompt files: put them in probekit/private/ and register them in its config.json (README).")
+        sys.exit("No prompt files: register them with python -m probekit setup --prompts PREFIX=FILE (README).")
     hits = [(a.id, prompts.text(a.id))] if a.id else list(prompts.search(a.words))
     for pid, t in hits[:a.limit]:
         pii = check.pii(check.words(t))
-        print(f"{pid:9} {'[possible PII: ' + ', '.join(pii) + '] ' if pii else ''}{t if a.id else ' '.join(t.split())[:160]}")
+        note = f"[possible PII: {', '.join(pii)}] " if pii else ""
+        if a.id:
+            print(json.dumps({"prompt": pid, "sha": prompts.fingerprint(t)}) + f"\n{note}{t}")
+        else:
+            print(f"{pid:9} {prompts.fingerprint(t)}  {note}{' '.join(t.split())[:150]}")
     print(f"({len(hits)} prompts)", file=sys.stderr)
 
 

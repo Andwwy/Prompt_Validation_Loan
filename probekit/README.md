@@ -99,6 +99,8 @@ register it in a private config (below).
 
 ## Choose a model
 
+Put your API key in the repo's `.env` (copy `.env.example`); the kit reads it for every backend.
+
 | Model | Backend |
 |---|---|
 | `mock` | No call. Picks menu items at random, so the whole pipeline runs |
@@ -109,9 +111,12 @@ register it in a private config (below).
 
 Spend is capped. Every paid call is logged to `probekit/results/spend.jsonl`. A call does not start if its worst case
 could pass the budget (default $5; env `PROBEKIT_BUDGET_USD`), or while the file `probekit/results/SPEND_LOCK` exists.
-Models without a price in `probekit/backends.py` need `--price IN,OUT` (USD per 1M tokens).
+Models without a price in `probekit/backends.py` need `--price IN,OUT` (USD per 1M tokens); `openai:gpt-5.5` uses the
+listed price of `openai.gpt-5.5`.
 
-A logged run is never run again: `run` skips any arm and rep that already has a log in `probekit/results/`.
+A logged run is never paid twice: `run` skips any arm and rep that already has a log for the same agent version. The
+version is a hash of the agent's instructions and knowledge files, so a re-exported or remapped agent gets new runs, and
+`score` counts only the current version's runs (it says how many runs of other versions it leaves out).
 
 ## Score with the validator
 
@@ -179,11 +184,14 @@ A scenario can use a real prompt without holding its text. Register the chat fil
 ```
 
 ```json
-{"slots": {"ask": {"prompt": "NV 1193"}}, "turns": ["{ask}"]}
+{"slots": {"ask": {"prompt": "NV 1193", "sha": "3e1f0a7c"}}, "turns": ["{ask}"]}
 ```
 
-`NV 1193` is spreadsheet row 1193 of the NV file. The text is read when the scenario is built, so the JSON in the repo
-holds only the id. Find prompts with `python -m probekit prompts gift letter` (or `--id "NV 1193"`). Before any call,
+`NV 1193` is spreadsheet row 1193 of the NV file, and `sha` is a fingerprint of its text. The text is read when the
+scenario is built, so the JSON in the repo holds only the id and the fingerprint. Find prompts with
+`python -m probekit prompts gift letter`; `--id "NV 1193"` prints the reference to paste. Row numbers move when a newer
+file is registered: the scenario then stops with the row that holds its text now, so give a newer file its own prefix
+(`setup --prompts NV2=<file>`) or update the ids. Before any call,
 `run` refuses to send text from a prompt file that holds a first name, a 7+ digit number, or an SSN or phone shape.
 
 `config.json` keys (paths relative to the private folder; another folder works too, named by env
