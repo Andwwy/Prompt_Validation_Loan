@@ -6,16 +6,18 @@
   python -m probekit run SCENARIO --model MODEL [--agent ID] [--n 5] [--arms A B] [--workers 4]
                                   [--temperature 1] [--price IN,OUT]
   python -m probekit score [SCENARIO ...] [--agent ID] [--model MODEL] [--out FILE]
+  python -m probekit prompts [WORD ...] [--id ID]            search your private prompt files (chat history)
   python -m probekit check                                  leak check before sharing
 
-MODEL is mock (no call), openai:<name>, anthropic:<name>, mantle:<name>, or a bare name for the configured default.
+MODEL is mock (no call), gemini:<name>, openai:<name>, anthropic:<name>, mantle:<name>, or a bare name for the
+configured default.
 """
 
 import argparse
 import json
 import sys
 
-from . import agents, check, config, run, scenarios, score
+from . import agents, check, config, prompts, run, scenarios, score
 
 
 def cmd_list(a):
@@ -47,6 +49,17 @@ def cmd_show(a):
     print(system if a.full or len(system) <= 1500 else system[:1500] + f"\n... [{len(system) - 1500} more chars; --full]")
     for i, m in enumerate(msgs, 1):
         print(f"\n## Loan officer, turn {i}\n\n{m}")
+
+
+def cmd_prompts(a):
+    """Prompts from the private prompt files, with a PII note, to pick one for a scenario ({"prompt": "<id>"})."""
+    if not config.load()["prompt_files"]:
+        sys.exit("No prompt files: put them in probekit/private/ and register them in its config.json (README).")
+    hits = [(a.id, prompts.text(a.id))] if a.id else list(prompts.search(a.words))
+    for pid, t in hits[:a.limit]:
+        pii = check.pii(check.words(t))
+        print(f"{pid:9} {'[possible PII: ' + ', '.join(pii) + '] ' if pii else ''}{t if a.id else ' '.join(t.split())[:160]}")
+    print(f"({len(hits)} prompts)", file=sys.stderr)
 
 
 def cmd_run(a):
@@ -90,6 +103,11 @@ def main(argv=None):
     c.add_argument("--temperature", type=float, default=1.0)
     c.add_argument("--out")
     c.set_defaults(f=cmd_score)
+    p = sub.add_parser("prompts")
+    p.add_argument("words", nargs="*")
+    p.add_argument("--id", help="one prompt in full, e.g. 'NV 559'")
+    p.add_argument("--limit", type=int, default=50)
+    p.set_defaults(f=cmd_prompts)
     sub.add_parser("check").set_defaults(f=lambda a: sys.exit(check.main()))
     a = ap.parse_args(argv)
     a.f(a)

@@ -3,14 +3,16 @@ Leak check before sharing the kit. Scans every text file in the kit (results/ ex
 - personal-data patterns (email, phone other than the fictional 555-01xx range, SSN) and keys or internal ids;
 - terms the private config blocks (e.g. the lender's name, staff names);
 - runs of 6+ words copied from the private text in `corpora` (agent instructions, knowledge files, drafts);
-- PII in runs of 6+ words copied from `prompt_files` (real prompts the repo's readers already hold). Copying them is
-  allowed; a copied run that holds a first name, a 7+ digit number, or an SSN or phone shape is not.
-Without a private config only the first check runs. Exit status 1 if anything is found.
+- text copied from `prompt_files` (real prompts): a finding when prompt_text_in_repo is false; when it is true (the
+  repo's readers hold the files), only a copied run with a first name, a 7+ digit number, or an SSN or phone shape is;
+- files under probekit/private/ or probekit/results/ that git tracks (they would be pushed).
+Without a private config only the first and last checks run. Exit status 1 if anything is found.
 
 run.py uses copied_pii() on every message before it goes to a model.
 """
 
 import re
+import subprocess
 import zipfile
 from functools import lru_cache
 from pathlib import Path
@@ -25,7 +27,7 @@ RULES = [("email address", r"[\w.+-]+@[\w-]+\.[\w.-]+"),
          ("API key", r"\bsk-[A-Za-z0-9_-]{16,}|\bAKIA[0-9A-Z]{16}\b|bedrock-api-key-[A-Za-z0-9]")]
 FICTIONAL_PHONE = re.compile(r"555[ .-]01\d\d")
 N = 6
-SKIP = {"results", "__pycache__", ".git", ".pytest_cache"}
+SKIP = {"private", "results", "__pycache__", ".git", ".pytest_cache"}
 TEXT = {".py", ".md", ".json", ".txt", ".toml", ".cfg", ".yml", ".yaml", ".gitignore"}
 
 
@@ -67,15 +69,16 @@ def _grams(paths):
 
 @lru_cache(maxsize=None)
 def private_grams():
-    """6-grams of the private text. Not counted: text that is also in the prompt files (the readers hold it; the PII
-    rule covers it) and runs of prompt ids only (e.g. 'nv 146 nv 235 nv 551')."""
-    return {g for g in _grams(config.load()["corpora"]) - prompt_grams()
-            if not all(re.fullmatch(r"nv|ce|\d+", w) for w in g.split())}
+    """6-grams of the private text. The prompt files count as private text unless prompt_text_in_repo; then their text
+    is left out (the PII rule covers it). Runs of row ids only (e.g. 'nv 146 nv 235 nv 551') are left out."""
+    grams = _grams(config.load()["corpora"])
+    grams = grams - prompt_grams() if config.load()["prompt_text_in_repo"] else grams | prompt_grams()
+    return {g for g in grams if not all(re.fullmatch(r"[a-z]{2}|\d+", w) for w in g.split())}
 
 
 @lru_cache(maxsize=None)
 def prompt_grams():
-    return _grams(config.load()["prompt_files"])
+    return _grams(config.load()["prompt_files"].values())
 
 
 @lru_cache(maxsize=None)
@@ -116,6 +119,16 @@ def copied_pii(text):
     return [f"{' '.join(r)!r}: {', '.join(why)}" for r in copied_runs(words(text), prompt_grams()) if (why := pii(r))]
 
 
+def tracked_private():
+    """Files under probekit/private/ or probekit/results/ that git tracks."""
+    try:
+        out = subprocess.run(["git", "ls-files", "--", "private", "results"], cwd=config.KIT, capture_output=True,
+                             text=True).stdout
+    except OSError:
+        return []
+    return out.split("\n")[:-1]
+
+
 def scan():
     cfg = config.load()
     rules = [(name, re.compile(pat)) for name, pat in RULES]
@@ -131,9 +144,12 @@ def scan():
         t = words(f.read_text(errors="ignore"))
         copied = sorted({" ".join(t[i:i + N]) for i in range(len(t) - N + 1)} & grams)
         hits += [f"{rel}: {N} words copied from private text: {g!r}" for g in copied]
-        n_copied += len(copied_runs(t, prompt_grams()))
-        hits += [f"{rel}: copied from a real prompt, possible PII: {h}" for h in copied_pii(f.read_text(errors="ignore"))]
-    return hits, bool(grams or prompt_grams()), n_copied
+        if cfg["prompt_text_in_repo"]:
+            n_copied += len(copied_runs(t, prompt_grams()))
+            hits += [f"{rel}: copied from a real prompt, possible PII: {h}"
+                     for h in copied_pii(f.read_text(errors="ignore"))]
+    hits += [f"{f}: tracked by git, so it would be pushed (it should be git-ignored)" for f in tracked_private()]
+    return hits, bool(grams), n_copied
 
 
 def main():

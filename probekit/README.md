@@ -130,22 +130,52 @@ python -m probekit check
 It looks for personal-data patterns, keys and internal ids. With a private config it also looks for blocked terms, for
 any run of 6 words copied from the private text you list, and for PII in text copied from your prompt files.
 
-## Private mode
+## Private data (stays off GitHub)
 
-Set `PROBEKIT_PRIVATE` to a folder outside the repo. Its `config.json` can set:
+This repo is public, so it holds no real agent settings, chat history or run logs. Keep them in
+`probekit/private/`. The repo's `.gitignore` ignores that folder, `check` reports any file in it that git tracks, and
+the kit finds it without any setting:
+
+```
+probekit/private/
+  config.json         optional: the keys below
+  overlays.json       optional: replaces fields of a scenario, e.g. its original wording
+  agents/             ChatGPT custom-GPT export folders (configs.raw.json; knowledge files in files/)
+  excerpts/           the agents' own knowledge-file excerpts, used in place of probekit/excerpts/
+  prompts/            chat history: spreadsheets of real loan-officer prompts (.xlsx or .csv)
+  results/            run logs and the spend ledger, if config.json sets results_dir to "results"
+```
+
+Every folder in `agents/` appears in `python -m probekit agents` as `export/<name>`. To run the scenarios on real
+agents without editing them, map the stand-in ids to export folders in `config.json`; the real agent then replaces
+the stand-in of the same id.
+
+A scenario can use a real prompt without holding its text. Register the chat files with an id prefix, then name a row:
+
+```json
+{"prompt_files": {"NV": "prompts/questions.xlsx", "CE": "prompts/chats.xlsx"}}
+```
+
+```json
+{"slots": {"ask": {"prompt": "NV 1193"}}, "turns": ["{ask}"]}
+```
+
+`NV 1193` is spreadsheet row 1193 of the NV file. The text is read when the scenario is built, so the JSON in the repo
+holds only the id. Find prompts with `python -m probekit prompts gift letter` (or `--id "NV 1193"`). Before any call,
+`run` refuses to send text from a prompt file that holds a first name, a 7+ digit number, or an SSN or phone shape.
+
+`config.json` keys (paths relative to the private folder; another folder works too, named by env
+`PROBEKIT_PRIVATE`):
 
 | Key | Use |
 |---|---|
 | `results_dir`, `ledger`, `spend_lock`, `budget_usd` | Where runs and spend go |
 | `default_backend`, `mantle` | Backend for bare model names; Mantle's `env_file`, `project_key`, `region` |
-| `agents_dir`, `agents` | Real agent exports. An id equal to a stand-in's replaces it, so scenarios run unchanged |
-| `excerpts_dir` | The agents' own knowledge-file excerpts, used in place of `probekit/excerpts/` |
+| `agents_dir`, `agents` | Real agent exports (default `agents/`). An id equal to a stand-in's replaces it, e.g. `{"loan_structuring": {"export": "<folder name>*", "knowledge": ["<file>.md"]}}` |
+| `excerpts_dir` | Knowledge-file excerpts (default `excerpts/`) |
+| `prompt_files` | Chat history files by id prefix |
+| `prompt_text_in_repo` | `false` (default): any text copied from the prompt files into the repo is a leak. Set `true` only for a private repo whose readers hold the files |
 | `corpora`, `blocked_terms` | Private text and terms for the leak check. A copy of 6+ words from `corpora` is a finding |
-| `prompt_files` | Real prompt files that everyone who reads your copy already holds. Text copied from them is allowed, but `check` reports a copied run with a first name, a 7+ digit number, or an SSN or phone shape, and `run` refuses to send one |
-
-An `overlays.json` in that folder can replace top-level fields of a scenario, for example the original prompt
-wording. Paths are relative to the private folder. This repo is public: keep `prompt_files` text, real agents and
-overlays out of it.
 
 ## Tests
 

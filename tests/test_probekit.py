@@ -115,3 +115,25 @@ def test_gemini_backend_is_priced():
     assert backends.parse("gemini:gemini-2.5-flash") == ("gemini", "gemini-2.5-flash")
     assert backends.PRICES["gemini-2.5-flash"] and "gemini" in backends.BACKENDS
 
+
+def test_real_prompt_by_id_stays_out_of_the_scenario(tmp_path, monkeypatch):
+    (tmp_path / "chats.csv").write_text("Job title,Full user text\nLO,what do i need for a gift on fha?\n"
+                                        "LO,call {x} about it\n")
+    (tmp_path / "config.json").write_text(json.dumps({"results_dir": "results", "prompt_files": {"cx": "chats.csv"}}))
+    monkeypatch.setenv("PROBEKIT_PRIVATE", str(tmp_path))
+    config.load.cache_clear()
+    from probekit import prompts
+    prompts.table.cache_clear()
+    try:
+        assert prompts.text("CX 2") == "what do i need for a gift on fha?"
+        assert [pid for pid, _ in prompts.search(["gift"])] == ["CX 2"]
+        sc = {"arms": {"A": "x", "B": "y"}, "slots": {"ask": {"prompt": "CX 2"}}, "turns": ["{ask} ({cue})"],
+              "paraphrases": [{"prompt": "CX 3"}]}
+        msgs, _ = scenarios.messages(sc, "B", 0)
+        assert msgs == ["call {x} about it", "what do i need for a gift on fha? (y)"]
+        with pytest.raises(KeyError):
+            prompts.text("NV 1")
+    finally:
+        config.load.cache_clear()
+        prompts.table.cache_clear()
+

@@ -1,13 +1,14 @@
 """
 Scenarios: one JSON file per probe in scenarios/ (fields in scenarios/README.md). Every arm sees the same messages
-except the arm's slots. A private overlay (overlays.json) can replace top-level fields of a scenario, e.g. the
-real prompt wording, so the shared file holds none of it.
+except the arm's slots. A slot or paraphrase can be {"prompt": "NV 559"}: a real prompt read from the private prompt
+files at run time, so the shared file holds only its id. A private overlay (overlays.json) can replace top-level fields
+of a scenario, e.g. the original wording.
 """
 
 import json
 import random
 
-from . import config, docs
+from . import config, docs, prompts
 
 DIR = config.KIT / "scenarios"
 
@@ -27,9 +28,14 @@ def baseline(sc):
     return sc.get("baseline") or sorted(sc["arms"])[0]
 
 
+def real(v):
+    """A slot value or paraphrase: text as given, or the text of a real prompt for {"prompt": id}."""
+    return prompts.text(v["prompt"]) if isinstance(v, dict) and "prompt" in v else v
+
+
 def slots(sc, arm):
     cue = sc["arms"][arm]
-    return {**sc.get("slots", {}), **(cue if isinstance(cue, dict) else {"cue": cue})}
+    return {k: real(v) for k, v in {**sc.get("slots", {}), **(cue if isinstance(cue, dict) else {"cue": cue})}.items()}
 
 
 def messages(sc, arm, rep):
@@ -41,7 +47,11 @@ def messages(sc, arm, rep):
         s["menu"] = "\n".join(f"{k}: {sc['menu'][k]}" for k in order)
     if "doc" in sc:
         s["doc"] = docs.build(sc["doc"], s)
-    first = [sc["paraphrases"][rep % len(sc["paraphrases"])]] if "paraphrases" in sc else []
+    if "paraphrases" in sc:
+        p = sc["paraphrases"][rep % len(sc["paraphrases"])]
+        first = [real(p).replace("{", "{{").replace("}", "}}") if isinstance(p, dict) else p]  # real text: no slots
+    else:
+        first = []
     return [t.format(**s) for t in first + sc["turns"]], order
 
 
