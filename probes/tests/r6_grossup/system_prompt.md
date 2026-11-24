@@ -8,4 +8,4 @@ The agent is the lender's own income-calculator agent, in the role `income_calcu
 2. the agent's two knowledge files, appended in the order of the private config (a custom GPT retrieves from them);
 3. the line `Current date: 2026-11-06.`
 
-The text is the lender's and is not in this repo. There is no stand-in for this role, so these rounds run only with an export mapped to `income_calculator` in the private config ([probes/README.md](../../README.md), "Run the gross-up rounds").
+The text is the lender's and is not in this repo. There is no stand-in for this role, so these rounds run only with an export mapped to `income_calculator` in the private config ([probes/README.md](../../README.md), "Rounds 5-9").

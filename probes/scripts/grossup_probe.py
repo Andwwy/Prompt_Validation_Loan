@@ -119,7 +119,7 @@ def resolve_agent():
         return agents.resolve(AGENT_ID)
     except KeyError:
         raise SystemExit(f'agent id "{AGENT_ID}" is not mapped: add it to the private config (probes/README.md, '
-                         '"Run the gross-up rounds")')
+                         '"Rounds 5-9")')
 
 
 def load_scenarios():

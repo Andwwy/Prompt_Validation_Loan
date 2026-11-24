@@ -388,7 +388,7 @@ def grossup_cards(rnd):
             f"3. the line `Current date: {sc0['date']}.`", "",
             "The text is the lender's and is not in this repo. There is no stand-in for this role, so these rounds run "
             "only with an export mapped to `income_calculator` in the private config "
-            "([probes/README.md](../../README.md), \"Run the gross-up rounds\").", "",
+            "([probes/README.md](../../README.md), \"Rounds 5-9\").", "",
             *(["Our runs used agent version `cb546c205717` (the hash that ends each log's file name)."]
               if g["ran"] else [])]
     write(folder, "system_prompt.md", f"{REAL}: the lender's own agent settings. Not in this repo.",

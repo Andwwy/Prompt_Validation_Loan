@@ -41,15 +41,35 @@ Real agents and models: [probekit/README.md](../probekit/README.md).
 
 ## Rounds 5-9 (gross-up)
 
-These need a real agent export: the role `income_calculator` has no stand-in. Add it to your private config
-(`probekit/private/config.json`, written by `python -m probekit setup`):
+These need a real agent export: the role `income_calculator` has no stand-in.
 
-```json
-{"agents": {"income_calculator": {"export": "<export folder name>*",
-                                  "knowledge": ["<knowledge file 1>", "<knowledge file 2>"]}}}
+**Where the export files go.** Keep them outside the repo, in any folder, one subfolder per agent as exported:
+
+```
+<exports folder>/
+  <agent name>__g-.../
+    configs.raw.json     the agent's instructions
+    files/               its knowledge files
 ```
 
-Then, for round 9 (`--round r5` to `r9`; `--help` lists the commands):
+Then tell the kit where they are. This writes `probekit/private/config.json`, which git ignores.
+
+```bash
+python -m probekit setup --agents <exports folder>
+```
+
+```bash
+python -m probekit agents
+```
+
+```bash
+python -m probekit setup --map income_calculator=export/<name> --knowledge income_calculator=<file 1> income_calculator=<file 2>
+```
+
+The second command lists your agents as `export/<name>`; use the income calculator's. `<file 1>` and `<file 2>` are
+file names in its `files/` folder. They are appended to the instructions in the order given.
+
+Then run a round (`--round r5` to `r9`; `--help` lists the commands). `--model mock` makes no call:
 
 ```bash
 python probes/scripts/grossup_probe.py --round r9 run --model <model> --n 1
