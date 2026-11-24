@@ -30,7 +30,7 @@ bottom line for my file: can i get her approved for fannie conventional? Reply w
 
 ## What changes in the other arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_work_permit` (baseline) | work permit |
 | `B_work_visa` | work visa |

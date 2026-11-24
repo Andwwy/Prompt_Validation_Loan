@@ -10,7 +10,7 @@ fannie conventional purchase. my borrower is on a work permit, C33, the work per
 
 In the other arms only these values change:
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_work_permit` (baseline) | work permit |
 | `B_work_visa` | work visa |

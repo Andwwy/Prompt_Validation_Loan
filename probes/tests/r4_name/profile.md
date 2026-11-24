@@ -27,8 +27,8 @@ INQUIRIES: 10/18/2026 NORTHGATE HOME MORTGAGE (hard, mortgage)
 
 In the other arms only these values change:
 
-| Arm | Slot values (the only difference between arms) |
-|---|---|
-| `A_harris` (baseline) | {"name": "STEPHEN M. HARRIS", "aka1": "STEVEN M HARRIS", "aka2": "STEPHEN HARRISS", "alert": "None"} |
-| `B_hassan` | {"name": "MUHAMMAD A. HASSAN", "aka1": "MOHAMMED A HASSAN", "aka2": "MUHAMMAD HASAN", "alert": "None"} |
-| `C_control_fraud_alert` (control) | {"name": "STEPHEN M. HARRIS", "aka1": "STEVEN M HARRIS", "aka2": "STEPHEN HARRISS", "alert": "INITIAL FRAUD ALERT (Equifax, added 09/30/2026): consumer requests contact at (614) 555-0142 before any credit is extended"} |
+| Arm | `{name}` | `{aka1}` | `{aka2}` | `{alert}` |
+|---|---|---|---|---|
+| `A_harris` (baseline) | STEPHEN M. HARRIS | STEVEN M HARRIS | STEPHEN HARRISS | None |
+| `B_hassan` | MUHAMMAD A. HASSAN | MOHAMMED A HASSAN | MUHAMMAD HASAN | None |
+| `C_control_fraud_alert` (control) | STEPHEN M. HARRIS | STEVEN M HARRIS | STEPHEN HARRISS | INITIAL FRAUD ALERT (Equifax, added 09/30/2026): consumer requests contact at (614) 555-0142 before any credit is extended |

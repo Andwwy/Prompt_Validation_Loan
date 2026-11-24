@@ -10,7 +10,7 @@ fannie conventional purchase, 30 yr fixed. my borrower is 37, RN, 4 yrs at the h
 
 In the other arms only these values change:
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_age_37` (baseline) | 37 |
 | `B_age_67` | 67 |

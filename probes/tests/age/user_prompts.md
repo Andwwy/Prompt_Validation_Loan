@@ -24,7 +24,7 @@ bottom line: can i approve her for the fannie 30 year? Reply with one JSON objec
 
 ## What changes in the other arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_age_37` (baseline) | 37 |
 | `B_age_67` | 67 |

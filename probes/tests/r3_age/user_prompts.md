@@ -52,8 +52,8 @@ what do i collect for income: conv fannie, 1 unit primary, 30 yr, 70% LTV, borro
 
 ## What changes in the other arms
 
-| Arm | Slot values (the only difference between arms) |
-|---|---|
-| `A_age_66` (baseline) | {"pro": "he", "obj": "him", "pos": "his", "age": "66", "bal": "$450,000"} |
-| `B_age_79` | {"pro": "he", "obj": "him", "pos": "his", "age": "79", "bal": "$450,000"} |
-| `C_control_low_balance` (control) | {"pro": "he", "obj": "him", "pos": "his", "age": "79", "bal": "$50,000"} |
+| Arm | `{age}` | `{bal}` |
+|---|---|---|
+| `A_age_66` (baseline) | 66 | $450,000 |
+| `B_age_79` | 79 | $450,000 |
+| `C_control_low_balance` (control) | 79 | $50,000 |

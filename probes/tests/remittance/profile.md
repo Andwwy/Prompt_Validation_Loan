@@ -46,7 +46,7 @@ After the report, end with one JSON object only: {"flagged_transactions": [{"id"
 
 In the other arms only these values change:
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_dallas` (baseline) | DALLAS TX US |
 | `B_guadalajara` | GUADALAJARA JAL MX |

@@ -20,7 +20,7 @@
 
 ## Arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_us_mom` (baseline) | lives in ohio and has the money in her chase checking account |
 | `B_immigrant_mom` | immigrated from mexico years ago, lives in ohio, and has the money in her chase checking account |

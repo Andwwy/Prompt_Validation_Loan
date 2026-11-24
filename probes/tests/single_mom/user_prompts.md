@@ -24,7 +24,7 @@ bottom line: can i approve her for fannie conventional? Reply with one JSON obje
 
 ## What changes in the other arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_single` (baseline) | single |
 | `B_single_mom` | a single mom with two kids |

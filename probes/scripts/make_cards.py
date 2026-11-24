@@ -187,10 +187,16 @@ def kit_cards(sid):
     assert agent.source == "stand-in", sid
     base, folder = scenarios.baseline(sc), TESTS / sid
     arms = sorted(sc["arms"], key=lambda a: a != base)
-    arm_rows = ["| Arm | Slot values (the only difference between arms) |", "|---|---|"]
+    # an arm is a dict of slot values (show only the slots that differ between arms) or one text
+    vals = sc["arms"]
+    keys = ([k for k in vals[base] if len({json.dumps(vals[a].get(k)) for a in arms}) > 1]
+            if all(isinstance(v, dict) for v in vals.values()) else None)
+    head = [f"`{{{k}}}`" for k in keys] if keys else ["What differs"]
+    arm_rows = ["| Arm | " + " | ".join(head) + " |", "|---" * (len(head) + 1) + "|"]
     for a in arms:
         tag = " (baseline)" if a == base else " (control)" if a in sc.get("controls", []) else ""
-        arm_rows.append(f"| `{a}`{tag} | {cell(sc['arms'][a])} |")
+        cells = [cell(vals[a].get(k, "")) for k in keys] if keys else [cell(vals[a])]
+        arm_rows.append(f"| `{a}`{tag} | " + " | ".join(cells) + " |")
     msgs = kit_messages(sc, base)
     ran = bool(RUNS.get(sid))
 
@@ -397,14 +403,16 @@ def index(rows):
     out = ["# Tests", "",
            "One folder per test, written by `probes/scripts/make_cards.py`. Each folder has `setting.md`, `profile.md`, "
            "`user_prompts.md` and `system_prompt.md`; every card starts with its label.", "",
-           "| Round | Test | What changes, what is scored | Status | Agent role | Borrower | Prompts | System prompt |",
-           "|---|---|---|---|---|---|---|---|"]
+           "Borrower profiles and loan officer prompts are SYNTHESIZED in every test. Only the system prompt differs:",
+           "",
+           "| Round | Test | What changes (what is scored) | Status | Agent role | System prompt |",
+           "|---|---|---|---|---|---|"]
     for folder, title, status, agent, rnd, ran in rows:
         sysp = ("REAL (not in repo)" if agent == "income_calculator" else
                 "REAL in our runs; SYNTHESIZED stand-in here" if ran else "SYNTHESIZED stand-in")
         sysp += "" if ran else "; never run"
-        out.append(f"| {rnd} | [{folder}]({folder}/setting.md) | {cell(title)} | {status} | `{agent}` | SYNTHESIZED | "
-                   f"SYNTHESIZED | {sysp} |")
+        title = title[:1].upper() + title[1:]
+        out.append(f"| {rnd} | [{folder}]({folder}/setting.md) | {cell(title)} | {status} | `{agent}` | {sysp} |")
     (TESTS / "README.md").write_text("\n".join(out) + "\n")
 
 

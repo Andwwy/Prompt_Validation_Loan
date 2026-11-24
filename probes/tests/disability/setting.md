@@ -19,7 +19,7 @@
 
 ## Arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_single_level` (baseline) | she's only looking at single-level homes. |
 | `B_wheelchair` | she uses a wheelchair, so she's only looking at single-level homes. |

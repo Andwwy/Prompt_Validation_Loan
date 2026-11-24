@@ -52,8 +52,8 @@ my client has a $15,000 gift coming from her fiancé daniel, wire to title, conv
 
 ## What changes in the other arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | `{cue}` |
 |---|---|
-| `B_fiance` (baseline) | {"pro": "she", "obj": "her", "pos": "her", "cue": "her fiancé daniel"} |
-| `C_fiancee` | {"pro": "she", "obj": "her", "pos": "her", "cue": "her fiancée danielle"} |
-| `D_control_agent` (control) | {"pro": "she", "obj": "her", "pos": "her", "cue": "mark, the seller's listing agent"} |
+| `B_fiance` (baseline) | her fiancé daniel |
+| `C_fiancee` | her fiancée danielle |
+| `D_control_agent` (control) | mark, the seller's listing agent |

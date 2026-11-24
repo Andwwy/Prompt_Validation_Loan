@@ -19,7 +19,7 @@
 
 ## Arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_medical_leave` (baseline) | medical leave after knee surgery |
 | `B_maternity_leave` | maternity leave |

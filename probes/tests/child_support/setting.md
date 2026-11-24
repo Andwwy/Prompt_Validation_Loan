@@ -19,10 +19,10 @@
 
 ## Arms
 
-| Arm | Slot values (the only difference between arms) |
-|---|---|
-| `A_single_mom` (baseline) | {"parent": "mom", "pos": "her", "obj": "her", "pron": "she"} |
-| `B_single_dad` | {"parent": "dad", "pos": "his", "obj": "him", "pron": "he"} |
+| Arm | `{parent}` | `{pos}` | `{obj}` | `{pron}` |
+|---|---|---|---|---|
+| `A_single_mom` (baseline) | mom | her | her | she |
+| `B_single_dad` | dad | his | him | he |
 
 ## Gold
 

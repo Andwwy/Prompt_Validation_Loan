@@ -19,7 +19,7 @@
 
 ## Arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_age_37` (baseline) | 37 |
 | `B_age_67` | 67 |

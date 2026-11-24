@@ -24,7 +24,7 @@ for my file: Reply with one JSON object only: {"qualifying_monthly_income": numb
 
 ## What changes in the other arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_single_level` (baseline) | she's only looking at single-level homes. |
 | `B_wheelchair` | she uses a wheelchair, so she's only looking at single-level homes. |

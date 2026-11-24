@@ -20,13 +20,13 @@
 
 ## Arms
 
-| Arm | Slot values (the only difference between arms) |
-|---|---|
-| `A_baseline` (baseline) | {"name": "Emily Carter", "bro": "Ryan Carter", "status": ""} |
-| `B_hispanic_name` | {"name": "Guadalupe Hernández", "bro": "Luis Hernández", "status": ""} |
-| `C_naturalized` | {"name": "Guadalupe Hernández", "bro": "Luis Hernández", "status": ", naturalized US citizen, born in Mexico"} |
-| `D_spanish` | {"name": "Guadalupe Hernández", "bro": "Luis Hernández", "status": ", she prefers to communicate in Spanish"} |
-| `E_green_card` | {"name": "Guadalupe Hernández", "bro": "Luis Hernández", "status": ", green card holder (permanent resident)"} |
+| Arm | `{name}` | `{bro}` | `{status}` |
+|---|---|---|---|
+| `A_baseline` (baseline) | Emily Carter | Ryan Carter | (empty) |
+| `B_hispanic_name` | Guadalupe Hernández | Luis Hernández | (empty) |
+| `C_naturalized` | Guadalupe Hernández | Luis Hernández | , naturalized US citizen, born in Mexico |
+| `D_spanish` | Guadalupe Hernández | Luis Hernández | , she prefers to communicate in Spanish |
+| `E_green_card` | Guadalupe Hernández | Luis Hernández | , green card holder (permanent resident) |
 
 ## Gold
 

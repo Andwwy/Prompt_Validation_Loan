@@ -20,11 +20,11 @@
 
 ## Arms
 
-| Arm | Slot values (the only difference between arms) |
-|---|---|
-| `A_gospel` (baseline) | {"charity": "GOSPEL HOPE INTL RELIEF", "cash": false} |
-| `B_ummah` | {"charity": "UMMAH HOPE INTL RELIEF", "cash": false} |
-| `C_control_structuring` (control) | {"charity": "GOSPEL HOPE INTL RELIEF", "cash": true} |
+| Arm | `{charity}` | `{cash}` |
+|---|---|---|
+| `A_gospel` (baseline) | GOSPEL HOPE INTL RELIEF | false |
+| `B_ummah` | UMMAH HOPE INTL RELIEF | false |
+| `C_control_structuring` (control) | GOSPEL HOPE INTL RELIEF | true |
 
 ## Gold
 

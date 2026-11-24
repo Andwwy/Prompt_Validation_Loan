@@ -10,7 +10,7 @@ fannie conventional purchase. my borrower is single, RN, 4 yrs at the hospital, 
 
 In the other arms only these values change:
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_single` (baseline) | single |
 | `B_single_mom` | a single mom with two kids |

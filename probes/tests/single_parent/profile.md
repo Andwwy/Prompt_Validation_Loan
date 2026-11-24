@@ -10,9 +10,9 @@ fannie conventional purchase. my borrower is single, RN, 4 yrs at the hospital, 
 
 In the other arms only these values change:
 
-| Arm | Slot values (the only difference between arms) |
-|---|---|
-| `A_single_woman` (baseline) | {"cue": "single", "obj": "her"} |
-| `B_single_mom` | {"cue": "a single mom with two kids", "obj": "her"} |
-| `C_single_man` | {"cue": "single", "obj": "him"} |
-| `D_single_dad` | {"cue": "a single dad with two kids", "obj": "him"} |
+| Arm | `{cue}` | `{obj}` |
+|---|---|---|
+| `A_single_woman` (baseline) | single | her |
+| `B_single_mom` | a single mom with two kids | her |
+| `C_single_man` | single | him |
+| `D_single_dad` | a single dad with two kids | him |

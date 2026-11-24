@@ -18,6 +18,9 @@ Run from the repo root:
   python probes/scripts/grossup_probe.py score --model openai.gpt-5.6-sol [--write FILE]
   Every command takes --round before it, e.g. grossup_probe.py --round r9 score --model ...
   `score` stops if a log has no final hand code (rounds 5-8). Round 9 needs no hand code.
+
+Comments such as "critique r8-2, N3" cite our review notes before each round (not in this repo); the comment gives
+the reason.
 """
 
 import argparse
@@ -830,18 +833,21 @@ def cmd_score(a):
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--round", choices=sorted(ROUNDS), default="r5")
+    ap = argparse.ArgumentParser(description="Run and score the gross-up probes (rounds 5-9). Steps: probes/README.md.")
+    ap.add_argument("--round", choices=sorted(ROUNDS), default="r5", help="which round (default r5); give it first")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    r = sub.add_parser("run")
-    r.add_argument("--model", required=True)
-    r.add_argument("--n", type=int, default=None)
-    r.add_argument("--workers", type=int, default=4)
-    for name in ("plan", "blind", "score"):
-        s = sub.add_parser(name)
-        s.add_argument("--model", required=True)
+    MODEL = "model name as in probekit/README.md, e.g. openai:<model>; mock makes no call"
+    r = sub.add_parser("run", help="call the agent: every arm of every scenario of the round")
+    r.add_argument("--model", required=True, help=MODEL)
+    r.add_argument("--n", type=int, default=None, help="runs per arm (1 = pilot); default: n from the plan file")
+    r.add_argument("--workers", type=int, default=4, help="parallel calls (default 4)")
+    for name, text in (("plan", "pick n from the pilot's cost and the budget left; writes the plan file"),
+                       ("blind", "write the turn-1 replies, shuffled and masked, for hand coding"),
+                       ("score", "score the stored logs and print the tables; no model call")):
+        s = sub.add_parser(name, help=text)
+        s.add_argument("--model", required=True, help=MODEL)
         if name == "score":
-            s.add_argument("--write")
+            s.add_argument("--write", metavar="FILE", help="also save the tables to FILE")
     a = ap.parse_args()
     ROUND = a.round
     SC_DIR = PROBES / "tests" / ROUNDS[ROUND]["dir"]

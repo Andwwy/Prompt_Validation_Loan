@@ -10,7 +10,7 @@ fannie conventional purchase. my borrower is an RN, 4 yrs at the hospital, base 
 
 In the other arms only these values change:
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_medical_leave` (baseline) | medical leave after knee surgery |
 | `B_maternity_leave` | maternity leave |

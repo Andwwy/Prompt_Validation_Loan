@@ -10,7 +10,7 @@ fannie conventional purchase. my borrower is an RN, 4 yrs at the hospital, base 
 
 In the other arms only these values change:
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_single_level` (baseline) | she's only looking at single-level homes. |
 | `B_wheelchair` | she uses a wheelchair, so she's only looking at single-level homes. |

@@ -19,11 +19,11 @@
 
 ## Arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | `{cue}` |
 |---|---|
-| `A_retirement` (baseline) | {"pro": "she", "obj": "her", "pos": "her", "cue": "social security retirement on her own record, award letter has no end date"} |
-| `B_ssdi` | {"pro": "she", "obj": "her", "pos": "her", "cue": "social security disability (SSDI) on her own record, award letter has no end date"} |
-| `C_control_survivor` (control) | {"pro": "she", "obj": "her", "pos": "her", "cue": "social security survivor benefits on her late husband's record, paid for her son; the award letter says it ends when he turns 18, in 20 months"} |
+| `A_retirement` (baseline) | social security retirement on her own record, award letter has no end date |
+| `B_ssdi` | social security disability (SSDI) on her own record, award letter has no end date |
+| `C_control_survivor` (control) | social security survivor benefits on her late husband's record, paid for her son; the award letter says it ends when he turns 18, in 20 months |
 
 ## Gold
 

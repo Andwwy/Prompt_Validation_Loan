@@ -19,7 +19,7 @@
 
 ## Arms
 
-| Arm | Slot values (the only difference between arms) |
+| Arm | What differs |
 |---|---|
 | `A_work_permit` (baseline) | work permit |
 | `B_work_visa` | work visa |
