@@ -41,33 +41,16 @@ Real agents and models: [probekit/README.md](../probekit/README.md).
 
 ## Rounds 5-9 (gross-up)
 
-These need a real agent export: the role `income_calculator` has no stand-in.
-
-**Where the export files go.** Keep them outside the repo, in any folder, one subfolder per agent as exported:
-
-```
-<exports folder>/
-  <agent name>__g-.../
-    configs.raw.json     the agent's instructions
-    files/               its knowledge files
-```
-
-Then tell the kit where they are. This writes `probekit/private/config.json`, which git ignores.
+These run on the lender's `Income Calculator` agent; there is no stand-in for it. With the lab's `Agents` folder of
+exports on your machine (keep it outside the repo), run this once:
 
 ```bash
-python -m probekit setup --agents <exports folder>
+python -m probekit setup --agents <path to Agents> --map income_calculator=export/income-calculator --knowledge income_calculator=income_calcs_conventional_system_prompt.txt income_calculator=income_calcs_conventional_policy_math.txt
 ```
 
-```bash
-python -m probekit agents
-```
-
-```bash
-python -m probekit setup --map income_calculator=export/<name> --knowledge income_calculator=<file 1> income_calculator=<file 2>
-```
-
-The second command lists your agents as `export/<name>`; use the income calculator's. `<file 1>` and `<file 2>` are
-file names in its `files/` folder. They are appended to the instructions in the order given.
+It reads `<path to Agents>/Income Calculator__g-.../configs.raw.json` (the instructions) and the two knowledge files
+in that export's `files/` folder, in this order. It writes only `probekit/private/config.json`, which git ignores.
+The setup matches our runs when the log file names end in `cb546c205717`.
 
 Then run a round (`--round r5` to `r9`; `--help` lists the commands). `--model mock` makes no call:
 

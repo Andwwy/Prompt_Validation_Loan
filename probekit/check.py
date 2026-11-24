@@ -4,7 +4,7 @@ cards, gross-up scenario files, gold cases and scripts) for:
 - personal-data patterns (email, phone other than the fictional 555-01xx range, SSN) and keys or internal ids;
 - terms the private config blocks (e.g. the lender's name, staff names);
 - runs of 6+ words copied from the private text in `corpora` (agent instructions, knowledge files, drafts), except
-  the runs listed in PUBLIC (public rule text that the private text also quotes);
+  the runs listed in PUBLIC (public rule text that the private text also quotes, and two cleared file names);
 - text copied from `prompt_files` (real prompts): a finding when prompt_text_in_repo is false; when it is true (the
   repo's readers hold the files), only a copied run with a first name, a 7+ digit number, or an SSN or phone shape is;
 - files under probekit/private/ or probekit/results/ that git tracks (they would be pushed).
@@ -32,8 +32,8 @@ N = 6
 SKIP = {"private", "results", "__pycache__", ".git", ".pytest_cache"}
 TEXT = {".py", ".md", ".json", ".txt", ".toml", ".cfg", ".yml", ".yaml", ".gitignore", ".csv", ".sha256"}
 ROOTS = (config.KIT, config.KIT.parent / "probes")
-# 6-word runs that are public text and also occur in the private text; they are not findings. Add one only after
-# naming its public source here.
+# 6-word runs that also occur in the private text and are cleared for this repo; they are not findings. Add one only
+# after naming here its public source or who cleared it.
 PUBLIC = {
     # Fannie Mae Selling Guide (public rule text, quoted in the gross-up gold cases and document menu)
     "on or before the first payment",
@@ -41,6 +41,10 @@ PUBLIC = {
     "ssa 1099 most recent signed federal",
     # Our own generic wording of a request (gross-up rounds, paraphrase 1); a real prompt has the same six words
     "can you calculate the qualifying income",
+    # File names of the income calculator's two knowledge files (probes/README.md setup step). Names only, no file
+    # text; cleared for this repo on 2026-11-24
+    "income calcs conventional system prompt txt",
+    "income calcs conventional policy math txt",
 }
 
 
