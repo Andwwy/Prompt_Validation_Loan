@@ -58,7 +58,7 @@ export GEMINI_API_KEY="your-gemini-api-key"
 
 ## 🔬 Agent Probing Kit
 
-The validator checks a prompt; `probekit/` checks the agent's answer. Each scenario is one JSON file with synthetic borrowers, a fixed correct output, and arms that differ in one factor.
+The validator checks a prompt; `probekit/` checks the agent's answer. Each scenario is one JSON file with synthetic borrowers, a fixed correct output, and arms that differ in one factor. Every test we ran, with its setting, borrower profile, prompts and system prompt (each labeled synthesized or real), is in [`probes/`](probes/README.md).
 
 **Setup.** Your agent exports and chat files stay where they are: `setup` only writes `probekit/private/config.json`, which git ignores.
 
